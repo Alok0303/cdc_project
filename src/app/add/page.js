@@ -1,10 +1,11 @@
 import React from 'react'
-import Login from './../components/login'
+import Addshoe from '@/components/Addshoe'
+
 
 const Home = () => {
   return (
     <div>
-      <Login/>
+        <Addshoe/>
     </div>
   )
 }
