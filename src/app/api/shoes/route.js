@@ -10,7 +10,7 @@ export async function GET() {
     console.log('=== GET /api/shoes started ===');
     console.log('Environment check:');
     console.log('- MONGODB_URI exists:', !!process.env.MONGODB_URI);
-    console.log('- MONGODB_URI value:', process.env.MONGODB_URI?.substring(0, 20) + '...');
+    
     
     console.log('Attempting database connection...');
     await dbConnect();
@@ -70,6 +70,7 @@ export async function POST(request) {
     const discount = parseFloat(formData.get('discount')) || 0;
     const stock = parseInt(formData.get('stock'));
     const category = formData.get('category');
+    
     
     console.log('Extracted fields:', { 
       name, 

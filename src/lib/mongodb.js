@@ -31,7 +31,6 @@ async function dbConnect() {
     };
 
     console.log('Creating new database connection...');
-    console.log('MongoDB URI prefix:', MONGODB_URI.substring(0, 20) + '...');
 
     cached.promise = mongoose
       .connect(MONGODB_URI, opts)

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Shoecard from "./Shoecard";
 
+
+
 const Dashboard = () => {
   const router = useRouter();
   const [shoes, setShoes] = useState([]);
@@ -82,22 +84,22 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-10">
+    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-10">
       <div className="flex flex-row justify-between items-center px-10 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-black">Welcome Gentleman</h1>
-          <p className="text-black">Welcome to your Kickkraft online portal.</p>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-800 via-orange-500 to-orange-600 bg-clip-text text-transparent">Welcome Gentleman</h1>
+          <p className="bg-gradient-to-r from-yellow-800 via-orange-500 to-orange-600 bg-clip-text text-transparent">Welcome to your Kickkraft online portal.</p>
         </div>
         <div className="flex gap-4">
           <a
-            className="text-black bg-blue-300 hover:bg-blue-400 px-5 py-2 rounded-md transition-colors"
+            className="text-black bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] px-5 py-2 rounded-md transition-colors"
             href="/add"
           >
             Add Shoe
           </a>
           <button
             onClick={handleLogout}
-            className="text-white bg-red-500 hover:bg-red-600 px-5 py-2 rounded-md transition-colors"
+            className="text-white bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] px-5 py-2 rounded-md transition-colors"
           >
             Logout
           </button>
