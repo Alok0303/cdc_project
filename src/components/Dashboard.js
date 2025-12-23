@@ -88,7 +88,11 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
+  const getTotalSales = (shoe) => {
+    return shoe.salesHistory && shoe.salesHistory.length > 0
+      ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
+      : shoe.sales || 0;
+  };
   const destroyCharts = () => {
     if (categoryChartInstance.current) categoryChartInstance.current.destroy();
     if (priceChartInstance.current) priceChartInstance.current.destroy();
@@ -103,7 +107,7 @@ const Dashboard = () => {
     const categoryData = {};
     shoes.forEach((shoe) => {
       const category = shoe.category || "Uncategorized";
-      categoryData[category] = (categoryData[category] || 0) + (shoe.sales || 0);
+      categoryData[category] = (categoryData[category] || 0) + getTotalSales(shoe);
     });
 
     if (categoryChartRef.current) {
@@ -169,7 +173,7 @@ const Dashboard = () => {
 
     shoes.forEach((shoe) => {
       const price = shoe.price - (shoe.price * shoe.discount) / 100;
-      const sales = shoe.sales || 0;
+      const sales =  getTotalSales(shoe);
       if (price < 2000) priceRanges["₹0-2000"] += sales;
       else if (price < 4000) priceRanges["₹2000-4000"] += sales;
       else if (price < 6000) priceRanges["₹4000-6000"] += sales;
@@ -244,7 +248,7 @@ const Dashboard = () => {
 
     shoes.forEach((shoe) => {
       const discount = shoe.discount || 0;
-      const sales = shoe.sales || 0;
+      const sales =  getTotalSales(shoe);
       if (discount === 0) discountRanges["0%"] += sales;
       else if (discount <= 10) discountRanges["1-10%"] += sales;
       else if (discount <= 20) discountRanges["11-20%"] += sales;
@@ -309,8 +313,8 @@ const Dashboard = () => {
     // 4. Total Sales Overview
     const brandData = {};
     shoes.forEach((shoe) => {
-      const brand = shoe.brand || "Unknown";
-      brandData[brand] = (brandData[brand] || 0) + (shoe.sales || 0);
+      const brand = shoe.brand || "Unknown";  
+      brandData[brand] = (brandData[brand] || 0) + getTotalSales(shoe);
     });
 
     // Sort brands by sales and get top 4
@@ -322,6 +326,7 @@ const Dashboard = () => {
     const top4Sales = sortedBrands.reduce((sum, [, sales]) => sum + sales, 0);
     const totalBrandSales = Object.values(brandData).reduce((sum, sales) => sum + sales, 0);
     const othersSales = totalBrandSales - top4Sales;
+    
 
     // Prepare final data
     const brandLabels = [...sortedBrands.map(([brand]) => brand), "Others"];
@@ -407,11 +412,11 @@ const Dashboard = () => {
   const hasMoreShoes = filteredShoes.length > 8;
 
   // Calculate stats
-  const totalSales = shoes.reduce((sum, shoe) => sum + (shoe.sales || 0), 0);
+  const totalSales = shoes.reduce((sum, shoe) => sum + getTotalSales(shoe), 0);
   const totalStock = shoes.reduce((sum, shoe) => sum + (shoe.stock || 0), 0);
   const totalRevenue = shoes.reduce((sum, shoe) => {
     const finalPrice = shoe.price - (shoe.price * shoe.discount) / 100;
-    return sum + finalPrice * (shoe.sales || 0);
+    return sum + finalPrice * getTotalSales(shoe);
   }, 0);
 
   if (loading) {

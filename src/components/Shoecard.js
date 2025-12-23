@@ -3,6 +3,9 @@
 const Shoecard = ({ shoe }) => {
   const finalPrice = shoe.price - (shoe.price * shoe.discount) / 100;
   const mainImage = shoe.images && shoe.images.length > 0 ? shoe.images[0] : "/shoe.webp";
+  const totalSales = shoe.salesHistory && shoe.salesHistory.length > 0
+  ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
+  : shoe.sales || 0;
 
   return (
     <div className="bg-zinc-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
@@ -50,14 +53,14 @@ const Shoecard = ({ shoe }) => {
 
         <div className="flex items-center justify-between text-xs text-amber-300">
           <span>Stock: {shoe.stock}</span>
-          <span>Sales: {shoe.sales || 0}</span>
+          <span>Sales: {totalSales}</span>
         </div>
 
-        <div className="inline-block py-2 px-5 bg-amber-400 rounded-md hover:bg-amber-500 transition-colors">
-          <a className="text-black text-lg font-semibold" href={`/dashboard/${shoe._id}`}>
+        
+          <a className="text-black py-2 px-5 bg-amber-400 rounded-md hover:bg-amber-500 transition-colors text-lg font-semibold" href={`/dashboard/${shoe._id}`}>
             View More
           </a>
-        </div>
+        
       </div>
     </div>
   );

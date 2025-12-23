@@ -70,6 +70,9 @@ const ShoeDetail = ({ params }) => {
 
   const finalPrice = shoe.price - (shoe.price * shoe.discount) / 100;
   const mainImage = shoe.images && shoe.images.length > 0 ? shoe.images[selectedImage] : "/shoe.webp";
+  const totalSales = shoe.salesHistory && shoe.salesHistory.length > 0
+  ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
+  : shoe.sales || 0;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-10">
@@ -196,7 +199,7 @@ const ShoeDetail = ({ params }) => {
                     <p className="text-sm text-gray-600">Total Sales</p>
                   </div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {shoe.sales || 0}
+                    {totalSales}
                   </p>
                 </div>
               </div>
