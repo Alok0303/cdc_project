@@ -236,20 +236,20 @@ const Dashboard = () => {
     // 3. Sales vs Discount
     const discountRanges = {
       "0%": 0,
-      "1-20%": 0,
-      "21-40%": 0,
-      "41-60%": 0,
-      "61%+": 0,
+      "1-10%": 0,
+      "11-20%": 0,
+      "21-30%": 0,
+      "31%+": 0,
     };
 
     shoes.forEach((shoe) => {
       const discount = shoe.discount || 0;
       const sales = shoe.sales || 0;
       if (discount === 0) discountRanges["0%"] += sales;
-      else if (discount <= 20) discountRanges["1-20%"] += sales;
-      else if (discount <= 40) discountRanges["21-40%"] += sales;
-      else if (discount <= 60) discountRanges["41-60%"] += sales;
-      else discountRanges["61%+"] += sales;
+      else if (discount <= 10) discountRanges["1-10%"] += sales;
+      else if (discount <= 20) discountRanges["11-20%"] += sales;
+      else if (discount <= 30) discountRanges["21-30%"] += sales;
+      else discountRanges["31%+"] += sales;
     });
 
     if (discountChartRef.current) {
@@ -307,31 +307,48 @@ const Dashboard = () => {
     }
 
     // 4. Total Sales Overview
-    const totalSales = shoes.reduce((sum, shoe) => sum + (shoe.sales || 0), 0);
-    const totalStock = shoes.reduce((sum, shoe) => sum + (shoe.stock || 0), 0);
-    const totalProducts = shoes.length;
-    const avgSales = totalProducts > 0 ? (totalSales / totalProducts).toFixed(1) : 0;
+    const brandData = {};
+    shoes.forEach((shoe) => {
+      const brand = shoe.brand || "Unknown";
+      brandData[brand] = (brandData[brand] || 0) + (shoe.sales || 0);
+    });
 
-    if (totalSalesChartRef.current) {
+    // Sort brands by sales and get top 4
+    const sortedBrands = Object.entries(brandData)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 4);
+
+    // Calculate "Others" (sum of remaining brands)
+    const top4Sales = sortedBrands.reduce((sum, [, sales]) => sum + sales, 0);
+    const totalBrandSales = Object.values(brandData).reduce((sum, sales) => sum + sales, 0);
+    const othersSales = totalBrandSales - top4Sales;
+
+    // Prepare final data
+    const brandLabels = [...sortedBrands.map(([brand]) => brand), "Others"];
+    const brandSales = [...sortedBrands.map(([, sales]) => sales), othersSales];
+
+    if (totalSalesChartRef.current) { 
       totalSalesChartInstance.current = new Chart(totalSalesChartRef.current, {
         type: totalSalesChartType,
         data: {
-          labels: ["Total Sales", "Total Stock", "Total Products", "Avg Sales/Product"],
+          labels: brandLabels,
           datasets: [
             {
-              label: "Overview",
-              data: [totalSales, totalStock, totalProducts, parseFloat(avgSales)],
+              label: "Sales by Brand",
+              data: brandSales,
               backgroundColor: [
                 "rgba(99, 102, 241, 0.8)",
                 "rgba(236, 72, 153, 0.8)",
                 "rgba(251, 146, 60, 0.8)",
                 "rgba(14, 165, 233, 0.8)",
+                "rgba(156, 163, 175, 0.8)",
               ],
               borderColor: totalSalesChartType === "pie" || totalSalesChartType === "doughnut" ? "#fff" : [
                 "rgba(99, 102, 241, 1)",
                 "rgba(236, 72, 153, 1)",
                 "rgba(251, 146, 60, 1)",
                 "rgba(14, 165, 233, 1)",
+                "rgba(156, 163, 175, 1)",
               ],
               borderWidth: 2,
               borderRadius: totalSalesChartType === "bar" ? 8 : 0,
@@ -350,18 +367,20 @@ const Dashboard = () => {
             },
             title: {
               display: true,
-              text: "Business Overview",
+              text: "Sales by Brand",
               font: { size: 16, weight: "bold" },
             },
           },
           scales: totalSalesChartType === "pie" || totalSalesChartType === "doughnut" ? {} : {
             y: {
               beginAtZero: true,
+              ticks: { stepSize: 1 },
             },
           },
         },
       });
     }
+  
   };
 
   const handleLogout = () => {
@@ -504,29 +523,28 @@ const Dashboard = () => {
         </div>
       ) : (
         <>
-          <div className="py-10 gap-6 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] px-10">
+          <div className="pt-10 gap-6 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] px-10">
             {displayedShoes.map((shoe) => (
               <Shoecard key={shoe._id} shoe={shoe} />
             ))}
           </div>
 
-          {!showAll && hasMoreShoes && !searchQuery && (
+          {!searchQuery && filteredShoes.length > 8 && (
             <div className="text-center py-6">
-              <p className="text-gray-500 mb-3">
-                Showing {displayedShoes.length} of {filteredShoes.length} shoes
-              </p>
               <button
-                onClick={() => setShowAll(true)}
-                className="text-blue-600 hover:text-blue-700 font-semibold"
+                onClick={() => setShowAll(prev => !prev)}
+                className="text-blue-600 hover:text-blue-700 font-semibold text-3xl bg-yellow-600 px-5 py-2 rounded-2xl cursor-pointer"
               >
-                Click "View All" to see {filteredShoes.length - 8} more shoes
+                {showAll
+                  ? "Show Less"
+                  : `View All (${filteredShoes.length - 8} more)`}
               </button>
             </div>
           )}
         </>
       )}
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-10 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-10 mb-8 mt-10">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
           <div className="flex items-center justify-between mb-2">
             <TrendingUp size={32} />
@@ -715,7 +733,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Chart 4: Total Sales Overview */}
+          {/* Chart 4: Sales vs Brands */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex justify-end gap-2 mb-4">
               <button
@@ -728,7 +746,7 @@ const Dashboard = () => {
               >
                 Bar
               </button>
-              <button
+              {/* <button
                 onClick={() => setTotalSalesChartType("line")}
                 className={`px-3 py-1 text-sm rounded ${
                   totalSalesChartType === "line"
@@ -737,7 +755,7 @@ const Dashboard = () => {
                 }`}
               >
                 Line
-              </button>
+              </button> */}
               <button
                 onClick={() => setTotalSalesChartType("pie")}
                 className={`px-3 py-1 text-sm rounded ${
