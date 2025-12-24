@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 
-function Login ({ formData, handleInputChange, onLogin, isLoading }) { // Destructured props correctly
+function Login ({ formData, handleInputChange, onLogin, isLoading }) {
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
   
   return (
     <div className="w-full">
-      <h2 className="text-white font-bold text-[32px] mb-10">Log in To Your Portal</h2>
+      <h2 className="text-white font-bold text-2xl sm:text-[28px] md:text-[32px] mb-6 sm:mb-8 md:mb-10">Log in To Your Portal</h2>
       <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
         <div>
           <label className="text-white text-sm block mb-1">Email</label>
@@ -50,9 +50,9 @@ function Login ({ formData, handleInputChange, onLogin, isLoading }) { // Destru
 
       <button
         type="button"
-        onClick={onLogin} // Added click handler
+        onClick={onLogin}
         disabled={isLoading}
-        className="w-full py-2 bg-neutral-900 hover:bg-neutral-800 mt-[30px] text-white rounded-full font-semibold text-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2 bg-neutral-900 hover:bg-neutral-800 mt-6 sm:mt-[30px] text-white rounded-full font-semibold text-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? 'Logging in...' : 'Login'}
       </button>
@@ -63,7 +63,7 @@ function Login ({ formData, handleInputChange, onLogin, isLoading }) { // Destru
 
 const Home = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false); // Moved loading state here
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -81,7 +81,6 @@ const Home = () => {
     const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
     if (formData.email === adminEmail && formData.password === adminPassword) {
-      // Save login state to localStorage
       localStorage.setItem("isLoggedIn", "true");
       router.push("/dashboard");
     } else {
@@ -95,22 +94,22 @@ const Home = () => {
       className="flex items-center justify-center w-full min-h-screen bg-cover bg-center bg-no-repeat px-4 sm:px-6 md:px-8 bg-black/90"
       style={{ backgroundImage: `url('/main-bg.webp')` }}
     >
-      <div className="w-full max-w-6xl flex flex-col sm:flex-row overflow-hidden rounded-2xl ">
+      <div className="w-full max-w-6xl flex flex-col md:flex-row overflow-hidden rounded-2xl">
         
-        <div className="shadow-[0_4px_4px_rgba(0,0,0,0.25)] rounded-xl border-[1.5px] border-white/20 w-full flex items-center justify-center h-full">
+        <div className="shadow-[0_4px_4px_rgba(0,0,0,0.25)] rounded-xl border-[1.5px] border-white/20 w-full flex items-center justify-center">
         
-        <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-[530px] bg-gradient-to-br from-amber-400 via-orange-400 to-orange-500 backdrop-blur-sm rounded-2xl p-6 sm:p-8 flex flex-col justify-between mx-auto min-h-[430px] sm:min-h-[450px] h-full">
+        <div className="w-full sm:w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] max-w-[530px] bg-gradient-to-br from-amber-400 via-orange-400 to-orange-500 backdrop-blur-sm rounded-2xl p-6 sm:p-8 flex flex-col justify-between mx-auto min-h-[500px] sm:min-h-[450px]">
           
-          <div className="flex justify-center flex-shrink-0 mb-3 mt-2">
+          <div className="flex justify-center flex-shrink-0 mb-4 sm:mb-3 mt-2">
             <img
               src="/logo.webp"
               alt="CAP Logo"
-              className="w-28 sm:w-32 lg:w-20 h-auto object-contain"
+              className="w-20 sm:w-24 md:w-28 lg:w-20 h-auto object-contain"
             />
           </div>
 
-          <div className="flex-1 flex flex-col justify-between overflow-hidden">
-            <div className="flex-1 overflow-y-auto px-1 flex flex-col justify-center min-h-[430px] sm:min-h-[450px]">
+          <div className="flex-1 flex flex-col justify-center overflow-hidden">
+            <div className="flex-1 overflow-y-auto px-1 flex flex-col justify-center">
                 <Login
                   formData={formData}
                   handleInputChange={handleInputChange}
@@ -121,8 +120,8 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="hidden md:flex w-full md:w-[55%] items-center justify-center p-6 md:p-10 h-full">
-          <h1 className="text-white font-bold text-4xl xl:text-6xl leading-snug text-left text-yellow-400">
+        <div className="hidden md:flex w-full md:w-[55%] items-center justify-center p-6 md:p-8 lg:p-10">
+          <h1 className="text-white font-bold text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl leading-snug text-left text-yellow-400">
             <span className="block">Craft Your</span>
             <span className="block">Perfect</span>
             <span className="block">Pair of</span>

@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, Eye, EyeOff, TrendingUp, Package, DollarSign, Tag } from "lucide-react";
+import { Search, TrendingUp, Package, DollarSign, Tag } from "lucide-react";
 import Chart from "chart.js/auto";
 import Shoecard from "./Shoecard";
 
@@ -44,7 +44,6 @@ const Dashboard = () => {
   }, [router]);
 
   useEffect(() => {
-    // Filter shoes based on search query
     if (searchQuery.trim() === "") {
       setFilteredShoes(shoes);
     } else {
@@ -64,7 +63,6 @@ const Dashboard = () => {
       createCharts();
     }
 
-    // Cleanup charts on unmount
     return () => {
       destroyCharts();
     };
@@ -89,11 +87,13 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+  
   const getTotalSales = (shoe) => {
     return shoe.salesHistory && shoe.salesHistory.length > 0
       ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
       : shoe.sales || 0;
   };
+  
   const destroyCharts = () => {
     if (categoryChartInstance.current) categoryChartInstance.current.destroy();
     if (priceChartInstance.current) priceChartInstance.current.destroy();
@@ -318,18 +318,14 @@ const Dashboard = () => {
       brandData[brand] = (brandData[brand] || 0) + getTotalSales(shoe);
     });
 
-    // Sort brands by sales and get top 4
     const sortedBrands = Object.entries(brandData)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 4);
 
-    // Calculate "Others" (sum of remaining brands)
     const top4Sales = sortedBrands.reduce((sum, [, sales]) => sum + sales, 0);
     const totalBrandSales = Object.values(brandData).reduce((sum, sales) => sum + sales, 0);
     const othersSales = totalBrandSales - top4Sales;
-    
 
-    // Prepare final data
     const brandLabels = [...sortedBrands.map(([brand]) => brand), "Others"];
     const brandSales = [...sortedBrands.map(([, sales]) => sales), othersSales];
 
@@ -386,7 +382,6 @@ const Dashboard = () => {
         },
       });
     }
-  
   };
 
   const handleLogout = () => {
@@ -414,11 +409,8 @@ const Dashboard = () => {
     return sortedShoes.slice(0, 8);
   };
 
-
   const displayedShoes = getDisplayedShoes();
-  const hasMoreShoes = filteredShoes.length > 8;
 
-  // Calculate stats
   const totalSales = shoes.reduce((sum, shoe) => sum + getTotalSales(shoe), 0);
   const totalStock = shoes.reduce((sum, shoe) => sum + (shoe.stock || 0), 0);
   const totalRevenue = shoes.reduce((sum, shoe) => {
@@ -432,7 +424,6 @@ const Dashboard = () => {
     .filter((shoe) => (shoe.stock || 0) < LOW_STOCK_LIMIT)
     .sort((a, b) => (a.stock || 0) - (b.stock || 0));
 
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -445,16 +436,16 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-10 bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)]">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8 lg:p-10 bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)]">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center px-10 mb-6 gap-4">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center px-4 sm:px-6 md:px-8 lg:px-10 mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Welcome Gentleman</h1>
-          <p className="text-gray-500">Welcome to your KickCraft online portal.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Welcome Gentleman</h1>
+          <p className="text-sm sm:text-base text-gray-500">Welcome to your KickCraft online portal.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
           <Link
-            className="text-white bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] px-5 py-2 rounded-md transition-colors"
+            className="text-white bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] px-5 py-2 rounded-md transition-colors text-center"
             href="/add"
           >
             Add Shoe
@@ -468,8 +459,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Search Bar and View Toggle */}
-      <div className="px-10 mb-6">
+      {/* Search Bar */}
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 mb-6">
         <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
           <div className="flex-1 relative">
             <div className="relative">
@@ -512,7 +503,7 @@ const Dashboard = () => {
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 mx-10">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 mx-4 sm:mx-6 md:mx-8 lg:mx-10">
           {error}
         </div>
       )}
@@ -542,7 +533,7 @@ const Dashboard = () => {
         </div>
       ) : (
         <>
-          <div className="pt-10 gap-6 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] px-10">
+          <div className="pt-10 gap-4 sm:gap-5 md:gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-4 sm:px-6 md:px-8 lg:px-10">
             {displayedShoes.map((shoe) => (
               <Shoecard key={shoe._id} shoe={shoe} />
             ))}
@@ -552,7 +543,7 @@ const Dashboard = () => {
             <div className="text-center py-6">
               <button
                 onClick={() => setShowAll(prev => !prev)}
-                className="text-blue-600 hover:text-blue-700 font-semibold text-3xl bg-yellow-600 px-5 py-2 rounded-2xl cursor-pointer"
+                className="text-blue-600 hover:text-blue-700 font-semibold text-2xl sm:text-3xl bg-yellow-600 px-4 sm:px-5 py-2 rounded-2xl cursor-pointer"
               >
                 {showAll
                   ? "Show Less"
@@ -562,8 +553,9 @@ const Dashboard = () => {
           )}
         </>
       )}
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-10 mb-8 mt-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 px-4 sm:px-6 md:px-8 lg:px-10 mb-8 mt-10">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
           <div className="flex items-center justify-between mb-2">
             <TrendingUp size={32} />
@@ -602,15 +594,15 @@ const Dashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="px-10 mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Sales Analytics</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6">Sales Analytics</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           {/* Chart 1: Category */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex justify-end gap-2 mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex flex-wrap justify-end gap-2 mb-4">
               <button
                 onClick={() => setCategoryChartType("bar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   categoryChartType === "bar"
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -618,19 +610,9 @@ const Dashboard = () => {
               >
                 Bar
               </button>
-              {/* <button
-                onClick={() => setCategoryChartType("line")}
-                className={`px-3 py-1 text-sm rounded ${
-                  categoryChartType === "line"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Line
-              </button> */}
               <button
                 onClick={() => setCategoryChartType("pie")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   categoryChartType === "pie"
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -640,7 +622,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setCategoryChartType("doughnut")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   categoryChartType === "doughnut"
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -649,17 +631,17 @@ const Dashboard = () => {
                 Doughnut
               </button>
             </div>
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <canvas ref={categoryChartRef}></canvas>
             </div>
           </div>
 
           {/* Chart 2: Price Range */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex justify-end gap-2 mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex flex-wrap justify-end gap-2 mb-4">
               <button
                 onClick={() => setPriceChartType("bar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   priceChartType === "bar"
                     ? "bg-green-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -669,17 +651,17 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setPriceChartType("radar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   priceChartType === "radar"
                     ? "bg-green-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                radar
+                Radar
               </button>
               <button
                 onClick={() => setPriceChartType("pie")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   priceChartType === "pie"
                     ? "bg-green-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -689,7 +671,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setPriceChartType("doughnut")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   priceChartType === "doughnut"
                     ? "bg-green-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -698,17 +680,17 @@ const Dashboard = () => {
                 Doughnut
               </button>
             </div>
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <canvas ref={priceChartRef}></canvas>
             </div>
           </div>
 
           {/* Chart 3: Discount */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex justify-end gap-2 mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex flex-wrap justify-end gap-2 mb-4">
               <button
                 onClick={() => setDiscountChartType("bar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   discountChartType === "bar"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -718,17 +700,17 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setDiscountChartType("radar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   discountChartType === "radar"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                radar
+                Radar
               </button>
               <button
                 onClick={() => setDiscountChartType("pie")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   discountChartType === "pie"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -738,7 +720,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setDiscountChartType("doughnut")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   discountChartType === "doughnut"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -747,17 +729,17 @@ const Dashboard = () => {
                 Doughnut
               </button>
             </div>
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <canvas ref={discountChartRef}></canvas>
             </div>
           </div>
 
           {/* Chart 4: Sales vs Brands */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex justify-end gap-2 mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex flex-wrap justify-end gap-2 mb-4">
               <button
                 onClick={() => setTotalSalesChartType("bar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   totalSalesChartType === "bar"
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -767,17 +749,17 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setTotalSalesChartType("radar")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   totalSalesChartType === "radar"
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                radar
+                Radar
               </button>
               <button
                 onClick={() => setTotalSalesChartType("pie")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   totalSalesChartType === "pie"
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -787,7 +769,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setTotalSalesChartType("doughnut")}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${
                   totalSalesChartType === "doughnut"
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -796,16 +778,17 @@ const Dashboard = () => {
                 Doughnut
               </button>
             </div>
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <canvas ref={totalSalesChartRef}></canvas>
             </div>
           </div>
         </div>
       </div>
+
       {/* Low Stock Shoes Section */}
-      <div className="px-10 mt-16 mb-20">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 mt-16 mb-20">
         <div className="flex items-center gap-3 mb-6">
-          <h2 className="text-2xl font-bold text-red-600">
+          <h2 className="text-xl sm:text-2xl font-bold text-red-600">
             ⚠️ Low Stock Products
           </h2>
         </div>
@@ -815,15 +798,13 @@ const Dashboard = () => {
             ✅ All products are well stocked
           </div>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {lowStockShoes.map((shoe) => (
               <Shoecard key={shoe._id} shoe={shoe} />
             ))}
           </div>
         )}
       </div>
-
-
     </div>
   );
 };

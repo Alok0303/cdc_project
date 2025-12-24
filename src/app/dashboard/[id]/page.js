@@ -13,7 +13,6 @@ const ShoeDetail = ({ params }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [deletingSaleId, setDeletingSaleId] = useState(null);
 
-  // Chart refs
   const salesDiscountChartRef = useRef(null);
   const salesDiscountChartInstance = useRef(null);
   const [chartType, setChartType] = useState("bar");
@@ -67,10 +66,7 @@ const ShoeDetail = ({ params }) => {
     setDeletingSaleId(saleIndex);
 
     try {
-      // Create a copy of salesHistory without the deleted entry
       const updatedSalesHistory = shoe.salesHistory.filter((_, idx) => idx !== saleIndex);
-      
-      // Calculate new total sales
       const newTotalSales = updatedSalesHistory.reduce((sum, entry) => sum + entry.sales, 0);
 
       const response = await fetch(`/api/shoes/${id}/sales`, {
@@ -88,7 +84,6 @@ const ShoeDetail = ({ params }) => {
       const result = await response.json();
 
       if (result.success) {
-        // Refresh shoe details
         await fetchShoeDetails();
         alert("Sale entry deleted successfully!");
       } else {
@@ -111,7 +106,6 @@ const ShoeDetail = ({ params }) => {
       return;
     }
 
-    // Group data by discount ranges
     const discountRanges = {
       "0%": 0,
       "1-10%": 0,
@@ -134,7 +128,6 @@ const ShoeDetail = ({ params }) => {
     const labels = Object.keys(discountRanges);
     const salesData = Object.values(discountRanges);
 
-    // Generate colors for each discount level
     const colors = [
       "rgba(239, 68, 68, 0.8)",
       "rgba(249, 115, 22, 0.8)",
@@ -227,7 +220,7 @@ const ShoeDetail = ({ params }) => {
 
   if (error || !shoe) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-red-600 text-xl mb-4">{error || "Shoe not found"}</p>
           <button
@@ -248,20 +241,20 @@ const ShoeDetail = ({ params }) => {
     : shoe.sales || 0;
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-6 md:p-10">
+    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-4 sm:p-6 md:p-8 lg:p-10">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <button
             onClick={() => router.push("/dashboard")}
-            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors cursor-pointer text-sm sm:text-base"
           >
             <ArrowLeft size={20} />
             Back to Dashboard
           </button>
           <button
             onClick={() => router.push(`/dashboard/${id}/edit`)}
-            className="flex items-center gap-2 bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] text-white px-6 py-2 rounded-lg transition-colors font-semibold cursor-pointer"
+            className="flex items-center gap-2 bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] text-white px-4 sm:px-6 py-2 rounded-lg transition-colors font-semibold cursor-pointer text-sm sm:text-base"
           >
             <Edit size={18} />
             Edit Shoe
@@ -271,23 +264,23 @@ const ShoeDetail = ({ params }) => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 p-4 sm:p-6 md:p-8">
           {/* Images Section */}
           <div>
             {/* Main Image */}
-            <div className="relative bg-gray-100 rounded-xl overflow-hidden mb-4 h-96 flex items-center justify-center">
+            <div className="relative bg-gray-100 rounded-xl overflow-hidden mb-4 h-64 sm:h-80 md:h-96 flex items-center justify-center">
               <img
                 src={mainImage}
                 alt={shoe.name}
                 className="w-full h-full object-cover"
               />
               {shoe.discount > 0 && (
-                <span className="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                <span className="absolute top-4 left-4 bg-red-500 text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-full">
                   {shoe.discount}% OFF
                 </span>
               )}
               {shoe.stock === 0 && (
-                <span className="absolute top-4 right-4 bg-gray-700 text-white text-sm font-bold px-3 py-1 rounded-full">
+                <span className="absolute top-4 right-4 bg-gray-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-full">
                   Out of Stock
                 </span>
               )}
@@ -295,12 +288,12 @@ const ShoeDetail = ({ params }) => {
 
             {/* Thumbnail Images */}
             {shoe.images && shoe.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {shoe.images.map((image, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`relative bg-gray-100 rounded-lg overflow-hidden h-24 border-2 transition-all ${
+                    className={`relative bg-gray-100 rounded-lg overflow-hidden h-16 sm:h-20 md:h-24 border-2 transition-all ${
                       selectedImage === idx
                         ? "border-blue-600 ring-2 ring-blue-200"
                         : "border-transparent hover:border-gray-300"
@@ -321,47 +314,45 @@ const ShoeDetail = ({ params }) => {
           <div className="flex flex-col justify-between">
             <div>
               {/* Brand */}
-              <p className="text-sm text-blue-600 uppercase tracking-wide font-semibold mb-2">
+              <p className="text-xs sm:text-sm text-blue-600 uppercase tracking-wide font-semibold mb-2">
                 {shoe.brand}
               </p>
 
               {/* Name */}
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {shoe.name}
               </h1>
 
               {/* Category */}
               <div className="inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full mb-6">
                 <Tag size={16} className="text-gray-600" />
-                <span className="text-sm text-gray-700 font-medium">
+                <span className="text-xs sm:text-sm text-gray-700 font-medium">
                   {shoe.category}
                 </span>
               </div>
 
               {/* Price */}
-              <div className="mb-8">
-                <div className="flex items-baseline gap-3 mb-2">
-                  <span className="text-4xl font-bold text-gray-900">
+              <div className="mb-6 sm:mb-8">
+                <div className="flex items-baseline gap-2 sm:gap-3 mb-2">
+                  <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
                     ₹{finalPrice.toFixed(2)}
                   </span>
                   {shoe.discount > 0 && (
-                    <>
-                      <span className="text-xl text-gray-400 line-through">
-                        ₹{shoe.price.toFixed(2)}
-                      </span>
-                    </>
+                    <span className="text-lg sm:text-xl text-gray-400 line-through">
+                      ₹{shoe.price.toFixed(2)}
+                    </span>
                   )}
                 </div>
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-4 mb-6 sm:mb-8">
                 <div className="bg-blue-200 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-1">
                     <Package size={18} className="text-blue-600" />
-                    <p className="text-sm text-gray-600">Stock Available</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Stock Available</p>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {shoe.stock} units
                   </p>
                 </div>
@@ -369,26 +360,26 @@ const ShoeDetail = ({ params }) => {
                 <div className="bg-green-200 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-1">
                     <TrendingUp size={18} className="text-green-600" />
-                    <p className="text-sm text-gray-600">Total Sales</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Total Sales</p>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {totalSales}
                   </p>
                 </div>
               </div>
 
               {/* Additional Info */}
-              <div className="border-t pt-6 space-y-3">
+              <div className="border-t pt-4 sm:pt-6 space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Added On</span>
                   <span className="text-gray-900">
-                    {new Date(shoe.createdAt).toLocaleDateString()}
+                    {new Date(shoe.createdAt).toLocaleDateString("en-GB")}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Last Updated</span>
                   <span className="text-gray-900">
-                    {new Date(shoe.updatedAt).toLocaleDateString()}
+                    {new Date(shoe.updatedAt).toLocaleDateString("en-GB")}
                   </span>
                 </div>
               </div>
@@ -399,93 +390,95 @@ const ShoeDetail = ({ params }) => {
 
       {/* Sales History Section */}
       {shoe.salesHistory && shoe.salesHistory.length > 0 && (
-        <div className="max-w-7xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden p-8">
+        <div className="max-w-7xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden p-4 sm:p-6 md:p-8">
           <div className="flex items-center gap-3 mb-6">
             <History size={24} className="text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Sales History</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Sales History</h2>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    Date & Time
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    Sales Count
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    Price
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    Discount
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    Final Price
-                  </th>
-                  <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...shoe.salesHistory].reverse().map((entry, idx) => {
-                  const actualIndex = shoe.salesHistory.length - 1 - idx;
-                  const entryFinalPrice = entry.price - (entry.price * entry.discount) / 100;
-                  return (
-                    <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <Clock size={16} className="text-gray-400" />
-                          <div>
-                            <p className="text-sm text-gray-900 font-medium">
-                              {new Date(entry.timestamp).toLocaleDateString()}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(entry.timestamp).toLocaleTimeString()}
-                            </p>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                      Date & Time
+                    </th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700">
+                      Sales
+                    </th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700">
+                      Price
+                    </th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700">
+                      Discount
+                    </th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700">
+                      Final
+                    </th>
+                    <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...shoe.salesHistory].reverse().map((entry, idx) => {
+                    const actualIndex = shoe.salesHistory.length - 1 - idx;
+                    const entryFinalPrice = entry.price - (entry.price * entry.discount) / 100;
+                    return (
+                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="py-3 sm:py-4 px-2 sm:px-4">
+                          <div className="flex items-center gap-2">
+                            <Clock size={14} className="text-gray-400 hidden sm:block" />
+                            <div>
+                              <p className="text-xs sm:text-sm text-gray-900 font-medium">
+                                {new Date(entry.timestamp).toLocaleDateString("en-GB")}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(entry.timestamp).toLocaleTimeString()}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-                          <TrendingUp size={14} />
-                          {entry.sales}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-gray-900 font-medium">
-                        ₹{entry.price.toFixed(2)}
-                      </td>
-                      <td className="py-4 px-4">
-                        {entry.discount > 0 ? (
-                          <span className="inline-flex items-center bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-semibold">
-                            {entry.discount}%
+                        </td>
+                        <td className="py-3 sm:py-4 px-2 sm:px-4">
+                          <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">
+                            <TrendingUp size={12} className="hidden sm:inline" />
+                            {entry.sales}
                           </span>
-                        ) : (
-                          <span className="text-gray-400 text-sm">No discount</span>
-                        )}
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="text-blue-600 font-bold text-lg">
-                          ₹{entryFinalPrice.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <button
-                          onClick={() => handleDeleteSale(actualIndex)}
-                          disabled={deletingSaleId === actualIndex}
-                          className="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <Trash2 size={14} />
-                          {deletingSaleId === actualIndex ? "Deleting..." : "Delete"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                        <td className="py-3 sm:py-4 px-2 sm:px-4 text-gray-900 font-medium text-xs sm:text-sm">
+                          ₹{entry.price.toFixed(2)}
+                        </td>
+                        <td className="py-3 sm:py-4 px-2 sm:px-4">
+                          {entry.discount > 0 ? (
+                            <span className="inline-flex items-center bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-semibold">
+                              {entry.discount}%
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 text-xs">No discount</span>
+                          )}
+                        </td>
+                        <td className="py-3 sm:py-4 px-2 sm:px-4">
+                          <span className="text-blue-600 font-bold text-sm sm:text-lg">
+                            ₹{entryFinalPrice.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
+                          <button
+                            onClick={() => handleDeleteSale(actualIndex)}
+                            disabled={deletingSaleId === actualIndex}
+                            className="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 sm:px-3 py-1 rounded text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <Trash2 size={12} />
+                            <span className="hidden sm:inline">{deletingSaleId === actualIndex ? "Deleting..." : "Delete"}</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {shoe.salesHistory.length === 0 && (
@@ -499,16 +492,16 @@ const ShoeDetail = ({ params }) => {
 
       {/* Sales vs Discount Chart */}
       {shoe.salesHistory && shoe.salesHistory.length > 0 && (
-        <div className="max-w-7xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden p-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="max-w-7xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden p-4 sm:p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <div className="flex items-center gap-3">
               <TrendingDown size={24} className="text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Sales vs Discount</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Sales vs Discount</h2>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setChartType("bar")}
-                className={`px-4 py-2 text-sm rounded-lg font-semibold transition-colors ${
+                className={`px-3 py-2 text-xs sm:text-sm rounded-lg font-semibold transition-colors ${
                   chartType === "bar"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -518,7 +511,7 @@ const ShoeDetail = ({ params }) => {
               </button>
               <button
                 onClick={() => setChartType("pie")}
-                className={`px-4 py-2 text-sm rounded-lg font-semibold transition-colors ${
+                className={`px-3 py-2 text-xs sm:text-sm rounded-lg font-semibold transition-colors ${
                   chartType === "pie"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -528,7 +521,7 @@ const ShoeDetail = ({ params }) => {
               </button>
               <button
                 onClick={() => setChartType("doughnut")}
-                className={`px-4 py-2 text-sm rounded-lg font-semibold transition-colors ${
+                className={`px-3 py-2 text-xs sm:text-sm rounded-lg font-semibold transition-colors ${
                   chartType === "doughnut"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -539,7 +532,7 @@ const ShoeDetail = ({ params }) => {
             </div>
           </div>
 
-          <div className="h-96">
+          <div className="h-64 sm:h-80 md:h-96">
             <canvas ref={salesDiscountChartRef}></canvas>
           </div>
         </div>

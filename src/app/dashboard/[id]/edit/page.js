@@ -1,11 +1,11 @@
 "use client";
-import { use,useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
 const EditShoe = ({ params }) => {
   const router = useRouter();
-  const {id} = use(params)
+  const { id } = use(params);
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -137,29 +137,30 @@ const EditShoe = ({ params }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-6 md:p-10">
+    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-4 sm:p-6 md:p-8 lg:p-10">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => router.push(`/dashboard/${id}`)}
-            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors cursor-pointer text-sm sm:text-base"
           >
             <ArrowLeft size={20} />
-            Back to Details
+            <span className="hidden sm:inline">Back to Details</span>
+            <span className="sm:hidden">Back</span>
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6 cursor-pointer">Edit Shoe</h1>
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 cursor-pointer">Edit Shoe</h1>
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 text-sm">
               {error}
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Shoe Name
@@ -169,7 +170,7 @@ const EditShoe = ({ params }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-transparent text-black"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-transparent text-black text-sm"
                 required
                 readOnly
                 disabled={saving}
@@ -185,14 +186,14 @@ const EditShoe = ({ params }) => {
                 name="brand"
                 value={formData.brand}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent text-sm"
                 required
                 readOnly
                 disabled={saving}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Price (₹)
@@ -202,7 +203,7 @@ const EditShoe = ({ params }) => {
                   name="price"
                   value={formData.price}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent text-sm"
                   required
                   min="0"
                   step="0.01"
@@ -219,7 +220,7 @@ const EditShoe = ({ params }) => {
                   name="discount"
                   value={formData.discount}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent text-sm"
                   min="0"
                   max="100"
                   disabled={saving}
@@ -227,7 +228,7 @@ const EditShoe = ({ params }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Stock
@@ -237,7 +238,7 @@ const EditShoe = ({ params }) => {
                   name="stock"
                   value={formData.stock}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent text-sm"
                   required
                   min="0"
                   disabled={saving}
@@ -246,25 +247,25 @@ const EditShoe = ({ params }) => {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  sales
+                  Sales
                 </label>
                 <input
                   type="text"
                   name="sales"
                   value={formData.sales}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-blue-500 focus:border-transparent text-sm"
                   required
                   disabled={saving}
                 />
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 type="submit"
                 disabled={saving || deleting}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {saving ? "Saving..." : "Save Changes"}
               </button>
@@ -273,7 +274,7 @@ const EditShoe = ({ params }) => {
                 type="button"
                 onClick={handleDelete}
                 disabled={saving || deleting}
-                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 <Trash2 size={18} />
                 {deleting ? "Deleting..." : "Delete"}
