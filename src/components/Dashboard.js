@@ -402,11 +402,17 @@ const Dashboard = () => {
   };
 
   const getDisplayedShoes = () => {
+    const sortedShoes = [...filteredShoes].sort(
+      (a, b) => getTotalSales(b) - getTotalSales(a)
+    );
+
     if (showAll) {
-      return filteredShoes;
+      return sortedShoes;
     }
-    return filteredShoes.slice(0, 8);
+
+    return sortedShoes.slice(0, 8);
   };
+
 
   const displayedShoes = getDisplayedShoes();
   const hasMoreShoes = filteredShoes.length > 8;
@@ -418,6 +424,13 @@ const Dashboard = () => {
     const finalPrice = shoe.price - (shoe.price * shoe.discount) / 100;
     return sum + finalPrice * getTotalSales(shoe);
   }, 0);
+
+  const LOW_STOCK_LIMIT = 15;
+
+  const lowStockShoes = shoes
+    .filter((shoe) => (shoe.stock || 0) < LOW_STOCK_LIMIT)
+    .sort((a, b) => (a.stock || 0) - (b.stock || 0));
+
 
   if (loading) {
     return (
@@ -435,8 +448,8 @@ const Dashboard = () => {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center px-10 mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-800 via-orange-500 to-orange-600 bg-clip-text text-transparent">Welcome Gentleman</h1>
-          <p className="bg-gradient-to-r from-yellow-800 via-orange-500 to-orange-600 bg-clip-text text-transparent">Welcome to your Kickkraft online portal.</p>
+          <h1 className="text-2xl font-bold text-gray-800">Welcome Gentleman</h1>
+          <p className="text-gray-500">Welcome to your KickCraft online portal.</p>
         </div>
         <div className="flex gap-4">
           <a
@@ -573,7 +586,7 @@ const Dashboard = () => {
             <DollarSign size={32} />
             <span className="text-sm opacity-80">Revenue</span>
           </div>
-          <p className="text-3xl font-bold">₹{totalRevenue.toFixed(0)}</p>
+          <p className="text-3xl font-bold">₹ {totalRevenue.toFixed(0)}</p>
           <p className="text-sm opacity-90">Total Revenue</p>
         </div>
 
@@ -788,6 +801,28 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      {/* Low Stock Shoes Section */}
+      <div className="px-10 mt-16 mb-20">
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-2xl font-bold text-red-600">
+            ⚠️ Low Stock Products
+          </h2>
+        </div>
+
+        {lowStockShoes.length === 0 ? (
+          <div className="bg-green-100 text-green-700 px-6 py-4 rounded-lg">
+            ✅ All products are well stocked
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
+            {lowStockShoes.map((shoe) => (
+              <Shoecard key={shoe._id} shoe={shoe} />
+            ))}
+          </div>
+        )}
+      </div>
+
+
     </div>
   );
 };

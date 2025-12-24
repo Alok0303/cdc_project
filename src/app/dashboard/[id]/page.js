@@ -1,16 +1,22 @@
 "use client";
-import { use,useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Edit, Package, Tag, TrendingUp, Clock, History } from "lucide-react";
-
+import { ArrowLeft, Edit, Package, Tag, TrendingUp, Clock, History, TrendingDown, Trash2 } from "lucide-react";
+import Chart from "chart.js/auto";
 
 const ShoeDetail = ({ params }) => {
   const router = useRouter();
-  const {id} = use(params)
+  const { id } = use(params);
   const [shoe, setShoe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [deletingSaleId, setDeletingSaleId] = useState(null);
+
+  // Chart refs
+  const salesDiscountChartRef = useRef(null);
+  const salesDiscountChartInstance = useRef(null);
+  const [chartType, setChartType] = useState("bar");
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -21,6 +27,18 @@ const ShoeDetail = ({ params }) => {
 
     fetchShoeDetails();
   }, [id, router]);
+
+  useEffect(() => {
+    if (shoe && shoe.salesHistory && shoe.salesHistory.length > 0) {
+      createSalesDiscountChart();
+    }
+
+    return () => {
+      if (salesDiscountChartInstance.current) {
+        salesDiscountChartInstance.current.destroy();
+      }
+    };
+  }, [shoe, chartType]);
 
   const fetchShoeDetails = async () => {
     try {
@@ -39,6 +57,161 @@ const ShoeDetail = ({ params }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteSale = async (saleIndex) => {
+    if (!confirm("Are you sure you want to delete this sale entry?")) {
+      return;
+    }
+
+    setDeletingSaleId(saleIndex);
+
+    try {
+      // Create a copy of salesHistory without the deleted entry
+      const updatedSalesHistory = shoe.salesHistory.filter((_, idx) => idx !== saleIndex);
+      
+      // Calculate new total sales
+      const newTotalSales = updatedSalesHistory.reduce((sum, entry) => sum + entry.sales, 0);
+
+      const response = await fetch(`/api/shoes/${id}/sales`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          saleIndex,
+          newTotalSales,
+          updatedSalesHistory,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Refresh shoe details
+        await fetchShoeDetails();
+        alert("Sale entry deleted successfully!");
+      } else {
+        alert(result.error || "Failed to delete sale entry");
+      }
+    } catch (err) {
+      console.error("Error deleting sale:", err);
+      alert("Failed to delete sale entry");
+    } finally {
+      setDeletingSaleId(null);
+    }
+  };
+
+  const createSalesDiscountChart = () => {
+    if (salesDiscountChartInstance.current) {
+      salesDiscountChartInstance.current.destroy();
+    }
+
+    if (!salesDiscountChartRef.current || !shoe.salesHistory || shoe.salesHistory.length === 0) {
+      return;
+    }
+
+    // Group data by discount ranges
+    const discountRanges = {
+      "0%": 0,
+      "1-10%": 0,
+      "11-20%": 0,
+      "21-30%": 0,
+      "31%+": 0,
+    };
+
+    shoe.salesHistory.forEach((entry) => {
+      const discount = entry.discount || 0;
+      const sales = entry.sales;
+      
+      if (discount === 0) discountRanges["0%"] += sales;
+      else if (discount <= 10) discountRanges["1-10%"] += sales;
+      else if (discount <= 20) discountRanges["11-20%"] += sales;
+      else if (discount <= 30) discountRanges["21-30%"] += sales;
+      else discountRanges["31%+"] += sales;
+    });
+    
+    const labels = Object.keys(discountRanges);
+    const salesData = Object.values(discountRanges);
+
+    // Generate colors for each discount level
+    const colors = [
+      "rgba(239, 68, 68, 0.8)",
+      "rgba(249, 115, 22, 0.8)",
+      "rgba(234, 179, 8, 0.8)",
+      "rgba(34, 197, 94, 0.8)",
+      "rgba(168, 85, 247, 0.8)",
+      "rgba(59, 130, 246, 0.8)",
+      "rgba(236, 72, 153, 0.8)",
+      "rgba(99, 102, 241, 0.8)",
+    ];
+
+    const borderColors = [
+      "rgba(239, 68, 68, 1)",
+      "rgba(249, 115, 22, 1)",
+      "rgba(234, 179, 8, 1)",
+      "rgba(34, 197, 94, 1)",
+      "rgba(168, 85, 247, 1)",
+      "rgba(59, 130, 246, 1)",
+      "rgba(236, 72, 153, 1)",
+      "rgba(99, 102, 241, 1)",
+    ];
+
+    salesDiscountChartInstance.current = new Chart(salesDiscountChartRef.current, {
+      type: chartType,
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Sales by Discount",
+            data: salesData,
+            backgroundColor: colors.slice(0, labels.length),
+            borderColor: borderColors.slice(0, labels.length),
+            borderWidth: 2,
+            borderRadius: chartType === "bar" ? 8 : 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: chartType === "pie" || chartType === "doughnut",
+            position: "bottom",
+          },
+          title: {
+            display: true,
+            text: "Sales by Discount",
+            font: { size: 16, weight: "bold" },
+          },
+        },
+        scales: chartType === "pie" || chartType === "doughnut" ? {} : {
+          x: {
+            title: {
+              display: true,
+              text: "Discount",
+              font: {
+                weight: "bold",
+              },
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Sales",
+              font: {
+                weight: "bold",
+              },
+            },
+            ticks: {
+              stepSize: 1,
+            },
+          },
+        },
+      },
+    });
   };
 
   if (loading) {
@@ -71,11 +244,11 @@ const ShoeDetail = ({ params }) => {
   const finalPrice = shoe.price - (shoe.price * shoe.discount) / 100;
   const mainImage = shoe.images && shoe.images.length > 0 ? shoe.images[selectedImage] : "/shoe.webp";
   const totalSales = shoe.salesHistory && shoe.salesHistory.length > 0
-  ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
-  : shoe.sales || 0;
+    ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
+    : shoe.sales || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-6 md:p-10">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="flex justify-between items-center">
@@ -88,7 +261,7 @@ const ShoeDetail = ({ params }) => {
           </button>
           <button
             onClick={() => router.push(`/dashboard/${id}/edit`)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-semibold cursor-pointer"
+            className="flex items-center gap-2 bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] text-white px-6 py-2 rounded-lg transition-colors font-semibold cursor-pointer"
           >
             <Edit size={18} />
             Edit Shoe
@@ -183,7 +356,7 @@ const ShoeDetail = ({ params }) => {
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-blue-50 p-4 rounded-xl">
+                <div className="bg-blue-200 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-1">
                     <Package size={18} className="text-blue-600" />
                     <p className="text-sm text-gray-600">Stock Available</p>
@@ -193,7 +366,7 @@ const ShoeDetail = ({ params }) => {
                   </p>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-xl">
+                <div className="bg-green-200 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-1">
                     <TrendingUp size={18} className="text-green-600" />
                     <p className="text-sm text-gray-600">Total Sales</p>
@@ -251,10 +424,14 @@ const ShoeDetail = ({ params }) => {
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                     Final Price
                   </th>
+                  <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {[...shoe.salesHistory].reverse().map((entry, idx) => {
+                  const actualIndex = shoe.salesHistory.length - 1 - idx;
                   const entryFinalPrice = entry.price - (entry.price * entry.discount) / 100;
                   return (
                     <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -294,6 +471,16 @@ const ShoeDetail = ({ params }) => {
                           ₹{entryFinalPrice.toFixed(2)}
                         </span>
                       </td>
+                      <td className="py-4 px-4 text-center">
+                        <button
+                          onClick={() => handleDeleteSale(actualIndex)}
+                          disabled={deletingSaleId === actualIndex}
+                          className="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Trash2 size={14} />
+                          {deletingSaleId === actualIndex ? "Deleting..." : "Delete"}
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -307,6 +494,54 @@ const ShoeDetail = ({ params }) => {
               <p>No sales history available yet</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Sales vs Discount Chart */}
+      {shoe.salesHistory && shoe.salesHistory.length > 0 && (
+        <div className="max-w-7xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <TrendingDown size={24} className="text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Sales vs Discount</h2>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setChartType("bar")}
+                className={`px-4 py-2 text-sm rounded-lg font-semibold transition-colors ${
+                  chartType === "bar"
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                Bar
+              </button>
+              <button
+                onClick={() => setChartType("pie")}
+                className={`px-4 py-2 text-sm rounded-lg font-semibold transition-colors ${
+                  chartType === "pie"
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                Pie
+              </button>
+              <button
+                onClick={() => setChartType("doughnut")}
+                className={`px-4 py-2 text-sm rounded-lg font-semibold transition-colors ${
+                  chartType === "doughnut"
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                Doughnut
+              </button>
+            </div>
+          </div>
+
+          <div className="h-96">
+            <canvas ref={salesDiscountChartRef}></canvas>
+          </div>
         </div>
       )}
     </div>

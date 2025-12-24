@@ -137,7 +137,7 @@ const EditShoe = ({ params }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <div className="min-h-screen bg-[linear-gradient(143.42deg,#79DEFC_2.34%,#DFA3D9_85.26%)] p-6 md:p-10">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
