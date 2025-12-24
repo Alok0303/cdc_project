@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 const Shoecard = ({ shoe }) => {
   const finalPrice = shoe.price - (shoe.price * shoe.discount) / 100;
@@ -57,9 +58,9 @@ const Shoecard = ({ shoe }) => {
         </div>
 
         
-          <a className="text-black py-2 px-5 bg-amber-400 rounded-md hover:bg-amber-500 transition-colors text-lg font-semibold" href={`/dashboard/${shoe._id}`}>
+          <Link className="text-black py-2 px-5 bg-amber-400 rounded-md hover:bg-amber-500 transition-colors text-lg font-semibold" href={`/dashboard/${shoe._id}`}>
             View More
-          </a>
+          </Link>
         
       </div>
     </div>

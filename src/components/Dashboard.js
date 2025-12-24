@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Search, Eye, EyeOff, TrendingUp, Package, DollarSign, Tag } from "lucide-react";
 import Chart from "chart.js/auto";
 import Shoecard from "./Shoecard";
@@ -452,12 +453,12 @@ const Dashboard = () => {
           <p className="text-gray-500">Welcome to your KickCraft online portal.</p>
         </div>
         <div className="flex gap-4">
-          <a
+          <Link
             className="text-white bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] px-5 py-2 rounded-md transition-colors"
             href="/add"
           >
             Add Shoe
-          </a>
+          </Link>
           <button
             onClick={handleLogout}
             className="text-white bg-[linear-gradient(90deg,#00C0FF_0%,#5558FF_100%)] px-5 py-2 rounded-md transition-colors"
