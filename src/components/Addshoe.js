@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const Addshoe = () => {
@@ -87,12 +88,12 @@ const Addshoe = () => {
       <div className="w-full max-w-3xl bg-white rounded-2xl p-8 shadow-lg">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Add New Shoe</h1>
-          <a
+          <Link
             href="/dashboard"
             className="text-blue-600 hover:text-blue-800 font-semibold"
           >
             ← Back to Dashboard
-          </a>
+          </Link>
         </div>
 
         {error && (

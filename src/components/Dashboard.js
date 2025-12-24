@@ -499,12 +499,12 @@ const Dashboard = () => {
         {searchQuery && (
           <div className="mt-3 text-sm text-gray-600">
             {filteredShoes.length === 0 ? (
-              <p>No shoes found for "{searchQuery}"</p>
+              <p>{`No shoes found for "${searchQuery}"`}</p>
             ) : (
               <p>
-                Found {filteredShoes.length}{" "}
-                {filteredShoes.length === 1 ? "shoe" : "shoes"} matching "
-                {searchQuery}"
+                {`Found ${filteredShoes.length} ${
+                  filteredShoes.length === 1 ? "shoe" : "shoes"
+                } matching "${searchQuery}"`}
               </p>
             )}
           </div>
