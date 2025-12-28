@@ -1,5 +1,7 @@
+// src/app/layout.js
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import QueryProvider from "@/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,7 +22,7 @@ export const metadata = {
     description: "Premium sneaker store",
     images: [
       {
-        url: "/og-banner.webp", // path from /public
+        url: "/og-banner.webp",
         width: 1200,
         height: 630,
         alt: "KickCraft – Premium Sneakers",
@@ -36,14 +38,13 @@ export const metadata = {
   },
 };
 
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

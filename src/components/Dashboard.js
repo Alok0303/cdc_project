@@ -2,16 +2,27 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { Search, TrendingUp, Package, DollarSign, Tag } from "lucide-react";
 import Chart from "chart.js/auto";
 import Shoecard from "./Shoecard";
 
+// API function
+const fetchShoes = async () => {
+  const response = await fetch("/api/shoes");
+  if (!response.ok) {
+    throw new Error("Failed to fetch shoes");
+  }
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || "Failed to fetch shoes");
+  }
+  return result.data;
+};
+
 const Dashboard = () => {
   const router = useRouter();
-  const [shoes, setShoes] = useState([]);
   const [filteredShoes, setFilteredShoes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
 
@@ -33,14 +44,18 @@ const Dashboard = () => {
   const [discountChartType, setDiscountChartType] = useState("doughnut");
   const [totalSalesChartType, setTotalSalesChartType] = useState("bar");
 
+  // Use React Query
+  const { data: shoes = [], isLoading, error } = useQuery({
+    queryKey: ["shoes"],
+    queryFn: fetchShoes,
+  });
+
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     if (!isLoggedIn) {
       router.push("/");
       return;
     }
-
-    fetchShoes();
   }, [router]);
 
   useEffect(() => {
@@ -68,32 +83,12 @@ const Dashboard = () => {
     };
   }, [shoes, categoryChartType, priceChartType, discountChartType, totalSalesChartType]);
 
-  const fetchShoes = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/shoes");
-      const result = await response.json();
-
-      if (result.success) {
-        setShoes(result.data);
-        setFilteredShoes(result.data);
-      } else {
-        setError("Failed to load shoes");
-      }
-    } catch (err) {
-      console.error("Error fetching shoes:", err);
-      setError("Failed to load shoes");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   const getTotalSales = (shoe) => {
     return shoe.salesHistory && shoe.salesHistory.length > 0
       ? shoe.salesHistory.reduce((sum, entry) => sum + entry.sales, 0)
       : shoe.sales || 0;
   };
-  
+
   const destroyCharts = () => {
     if (categoryChartInstance.current) categoryChartInstance.current.destroy();
     if (priceChartInstance.current) priceChartInstance.current.destroy();
@@ -174,7 +169,7 @@ const Dashboard = () => {
 
     shoes.forEach((shoe) => {
       const price = shoe.price - (shoe.price * shoe.discount) / 100;
-      const sales =  getTotalSales(shoe);
+      const sales = getTotalSales(shoe);
       if (price < 2000) priceRanges["₹0-2000"] += sales;
       else if (price < 4000) priceRanges["₹2000-4000"] += sales;
       else if (price < 6000) priceRanges["₹4000-6000"] += sales;
@@ -249,7 +244,7 @@ const Dashboard = () => {
 
     shoes.forEach((shoe) => {
       const discount = shoe.discount || 0;
-      const sales =  getTotalSales(shoe);
+      const sales = getTotalSales(shoe);
       if (discount === 0) discountRanges["0%"] += sales;
       else if (discount <= 10) discountRanges["1-10%"] += sales;
       else if (discount <= 20) discountRanges["11-20%"] += sales;
@@ -314,7 +309,7 @@ const Dashboard = () => {
     // 4. Total Sales Overview
     const brandData = {};
     shoes.forEach((shoe) => {
-      const brand = shoe.brand || "Unknown";  
+      const brand = shoe.brand || "Unknown";
       brandData[brand] = (brandData[brand] || 0) + getTotalSales(shoe);
     });
 
@@ -329,7 +324,7 @@ const Dashboard = () => {
     const brandLabels = [...sortedBrands.map(([brand]) => brand), "Others"];
     const brandSales = [...sortedBrands.map(([, sales]) => sales), othersSales];
 
-    if (totalSalesChartRef.current) { 
+    if (totalSalesChartRef.current) {
       totalSalesChartInstance.current = new Chart(totalSalesChartRef.current, {
         type: totalSalesChartType,
         data: {
@@ -424,7 +419,7 @@ const Dashboard = () => {
     .filter((shoe) => (shoe.stock || 0) < LOW_STOCK_LIMIT)
     .sort((a, b) => (a.stock || 0) - (b.stock || 0));
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -504,7 +499,7 @@ const Dashboard = () => {
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 mx-4 sm:mx-6 md:mx-8 lg:mx-10">
-          {error}
+          {error.message}
         </div>
       )}
 
@@ -685,6 +680,7 @@ const Dashboard = () => {
             </div>
           </div>
 
+          
           {/* Chart 3: Discount */}
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
             <div className="flex flex-wrap justify-end gap-2 mb-4">
