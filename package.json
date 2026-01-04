@@ -2,18 +2,23 @@
   "name": "cdc_project",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed-admin": "node scripts/seedAdmin.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.90.12",
+    "bcrypt": "^5.1.1",
     "chart.js": "^4.5.1",
     "cloudinary": "^2.8.0",
+    "dotenv": "^16.4.5",
     "formidable": "^3.5.4",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.562.0",
     "mongoose": "^9.0.2",
     "next": "^16.1.1",
@@ -25,6 +30,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
     "tailwindcss": "^4"
