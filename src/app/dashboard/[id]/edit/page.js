@@ -18,16 +18,33 @@ const EditShoe = ({ params }) => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (!isLoggedIn) {
-      router.push("/");
-      return;
-    }
+    // Check authentication first
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (!response.ok) {
+          router.push("/");
+          return;
+        }
+        setAuthChecked(true);
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        router.push("/");
+      }
+    };
 
-    fetchShoeDetails();
-  }, [id, router]);
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    // Only fetch shoe details after auth is verified
+    if (authChecked) {
+      fetchShoeDetails();
+    }
+  }, [authChecked, id]);
 
   const fetchShoeDetails = async () => {
     try {
@@ -125,12 +142,13 @@ const EditShoe = ({ params }) => {
     }
   };
 
-  if (loading) {
+  // Show loading while checking auth
+  if (!authChecked || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading shoe details...</p>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     );
