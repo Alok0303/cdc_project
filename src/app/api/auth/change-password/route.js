@@ -14,11 +14,11 @@ export async function PUT(request) {
 
     await dbConnect();
 
-    const { currentPassword, newPassword } = await request.json();
+    const {  newPassword } = await request.json();
 
-    if (!currentPassword || !newPassword) {
+    if (!newPassword) {
       return NextResponse.json(
-        { success: false, error: 'Please provide current and new password' },
+        { success: false, error: 'Please provide new password' },
         { status: 400 }
       );
     }
@@ -37,16 +37,6 @@ export async function PUT(request) {
       return NextResponse.json(
         { success: false, error: 'Admin not found' },
         { status: 404 }
-      );
-    }
-
-    // Verify current password
-    const isPasswordMatch = await admin.comparePassword(currentPassword);
-
-    if (!isPasswordMatch) {
-      return NextResponse.json(
-        { success: false, error: 'Current password is incorrect' },
-        { status: 401 }
       );
     }
 

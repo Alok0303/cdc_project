@@ -169,7 +169,7 @@ const Dashboard = () => {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 mt-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 mb-4 lg:grid-cols-4 gap-6 px-4 mt-10">
         <div className="bg-blue-600 p-6 rounded-xl text-white">
           <TrendingUp size={28} />
           <p className="text-3xl font-bold">{totalSales}</p>
@@ -193,6 +193,20 @@ const Dashboard = () => {
       </div>
 
       <Charts shoes={shoes} getTotalSales={getTotalSales} />
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 mt-16 mb-20">
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-red-600">
+            ⚠️ Low Stock Products
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {lowStockShoes.map((shoe) => (
+            <Shoecard key={shoe._id} shoe={shoe} />
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 };

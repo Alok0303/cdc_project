@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+                                            🛠️ Shoe Store Admin Dashboard
 
-## Getting Started
 
-First, run the development server:
+📌 Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The Shoe Store Admin Dashboard is a centralized, admin-only web application designed to manage and analyze shoe inventory 
+and sales data efficiently.
+This system enables administrators to monitor sales performance, manage stock levels, control discounts, and gain 
+insights through visual analytics — all from a single dashboard.
+The project focuses on data-driven decision making, helping admins understand sales trends, product performance,
+and inventory health in real time.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🚀 Features
+    👤 Admin Management
+        •	Secure admin-only access
+        •	View list of all admins
+        •	Add new admins from the dashboard
+    👟 Product (Shoe) Management
+        •	Add new shoes with details (brand, category, price, stock, discount)
+        •	Update:
+        •	Stock quantity
+        •	Sales count
+        •	Discount percentage
+        •	View all products with current status
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+📊 Sales & Analytics Dashboard
+    Overall Statistics
+        •	Total number of products
+        •	Total sales count
+        •	Total revenue generated
+        •	Total stock available
+    Sales Insights (All Products)
+        •	Sales by category
+        •	Sales by price range
+        •	Sales by discount range
+        •	Sales by brand
+    Product-Specific Analytics
+        •	View sales of a particular shoe
+        •	Analyze sales by discount range for an individual product
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+📉 Inventory Monitoring
+    •	Automatically detect and display low-stock products
+    •	Helps prevent stock shortages and manage inventory efficiently
+📈 Data Visualization
+    •	Interactive charts and graphs for:
+    •	Sales distribution
+    •	Product performance
+    •	Discount impact analysis
+    •	Clear visual insights for faster decision-making
+🎯 Use Cases
+    •	Inventory management for shoe stores
+    •	Sales performance analysis
+    •	Admin-level reporting system
+    •	Business intelligence dashboard for retail
+🧩 Tech Stack 
+    •	Frontend, Backend : Next.js,
+    •   Data Fetching : React Query,
+    •   Form Validation : Zod,
+    •	Data Visualization : Chart.js,
+    •	Image Storage : Cloudinary,
+    •	Database: MongoDB 
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+⚙️ Setup Instructions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+You can set up and access the project by following the steps below.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🔹 Run Locally
 
-## Deploy on Vercel
+    Clone the repository:
+        git clone https://github.com/Alok0303/cdc_project
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    Navigate to the project directory:
+        cd cdc_project
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    Install the required dependencies:
+        npm install
+
+    Start the development server:
+        npm run dev
+
+🔹 Dummy Admin Credentials
+
+    Use the following credentials to log in as an admin:
+
+    Email: owner@gmail.com
+    Password: 123456
+
+🌐 Live Demo
+
+    You can also access the deployed application here:
+
+    👉 https://cdc-project-phi.vercel.app/
+
+
+📝 Conclusion
+
+This project demonstrates strong skills in admin dashboard design, data visualization, inventory management, and analytics-driven systems, making it ideal for real-world retail management scenarios.
+

@@ -17,12 +17,12 @@ function LoginForm({ formData, handleInputChange, onLogin, isLoading }) {
         <div>
           <label className="text-white text-sm block mb-1">Email</label>
           <input
-            className="w-full px-3 py-2 bg-transparent border border-black rounded-md text-black text-sm placeholder-black focus:border-blue-500 focus:outline-none transition-colors"
+            className="w-full px-3 py-2 bg-transparent border border-black rounded-md text-black text-sm placeholder-black/45 focus:border-blue-500 focus:outline-none transition-colors"
             type="email"
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            placeholder="Enter your email"
+            placeholder="owner@gmail.com"
             required
           />
         </div>
@@ -30,12 +30,12 @@ function LoginForm({ formData, handleInputChange, onLogin, isLoading }) {
           <label className="text-white text-sm block mb-1">Password</label>
           <div className="relative">
             <input
-              className="w-full px-3 py-2 bg-transparent border border-black rounded-md text-black text-sm placeholder-black focus:border-blue-500 focus:outline-none transition-colors pr-10"
+              className="w-full px-3 py-2 bg-transparent border border-black rounded-md text-black text-sm placeholder-black/45 focus:border-blue-500 focus:outline-none transition-colors pr-10"
               type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              placeholder="Enter Password"
+              placeholder="123456"
               required
             />
             <button
